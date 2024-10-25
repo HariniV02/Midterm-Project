@@ -1,8 +1,3 @@
-"""
-Provides fixtures and utilities for generating test data dynamically
-using the Faker library and parametrize test functions in pytest.
-"""
-
 from decimal import Decimal
 from faker import Faker
 from calculator.operations import add, subtract, multiply, divide

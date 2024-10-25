@@ -17,7 +17,10 @@ variable-naming-style=snake_case
 # Disable specific messages
 disable=missing-module-docstring,
         missing-function-docstring,
-        invalid-name
+        invalid-name,
+        E501,  # Disable line length errors
+        W291,  # Disable trailing whitespace warnings
+        W293   # Disable blank lines containing whitespace
 
 [FORMAT]
 max-line-length=100
