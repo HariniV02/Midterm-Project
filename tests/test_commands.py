@@ -36,13 +36,11 @@ def test_divide_by_zero():
         divide_command.execute()  # This should raise the ValueError
 
 # Test for MenuCommand
-def test_menu_command(capsys):
+def test_menu_command():
     # Create a MenuCommand instance
     menu_command = MenuCommand()
-    
     # Execute the command
     output = menu_command.execute()
-    
     # Verify the expected output directly from the command
     expected_output = "Available operations: add, subtract, multiply, divide\n"  # This should match the command's output
     assert output == expected_output  # Check the output of the command

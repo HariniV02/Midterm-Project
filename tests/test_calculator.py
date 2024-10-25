@@ -17,4 +17,3 @@ def test_divide():
 def test_multiply():
     """ Test the multiplication method of the Calculator class. """
     assert Calculator.multiply(1, 2) == 2
-    
