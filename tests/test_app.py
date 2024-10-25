@@ -1,3 +1,4 @@
+"""Unit tests for the App and CommandHandler classes in the application."""
 import pytest
 from app import App
 from app.commands import CommandHandler
@@ -9,29 +10,24 @@ from app.plugins.divide import DivideCommand
 
 # Test REPL behavior in the App class
 
-def test_app_start_exit_command(capfd, monkeypatch):
+def test_app_start_exit_command(monkeypatch):
     """Test that the REPL exits correctly on 'exit' command."""
     # Simulate user entering 'exit'
     monkeypatch.setattr('builtins.input', lambda _: 'exit')
     app = App()
-    with pytest.raises(SystemExit) as e:
+    with pytest.raises(SystemExit) as exit_exception:
         app.start()
-    assert e.type == SystemExit
+    assert exit_exception.type == SystemExit
+
 
 def test_app_start_unknown_command(capfd, monkeypatch):
     """Test how the REPL handles an unknown command before exiting."""
     # Simulate user entering an unknown command followed by 'exit'
     inputs = iter(['unknown_command', 'exit'])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-
-    app = App()
-    
-    with pytest.raises(SystemExit) as excinfo:
+    app=App()
+    with pytest.raises(SystemExit):
         app.start()
-    
-    # Optionally, check for specific exit code or message
-    # assert excinfo.value.code == expected_exit_code
-    
     # Verify that the unknown command was handled as expected
     captured = capfd.readouterr()
     assert "No such command: unknown_command" in captured.out
@@ -40,6 +36,7 @@ def test_app_start_unknown_command(capfd, monkeypatch):
 # Test CommandHandler functionality with various commands
 
 def test_register_and_execute_multiply_command(capsys):
+    """Test registration and execution of the MultiplyCommand."""
     handler = CommandHandler()
     multiply_command = MultiplyCommand(6, 7)
 
@@ -56,7 +53,9 @@ def test_register_and_execute_multiply_command(capsys):
     assert captured.out == "MultiplyCommand: 6 * 7 = 42\n"
     assert result == 42
 
+
 def test_register_and_execute_divide_command(capsys):
+    """Test registration and execution of the DivideCommand."""
     handler = CommandHandler()
     divide_command = DivideCommand(10, 2)
 
@@ -73,7 +72,9 @@ def test_register_and_execute_divide_command(capsys):
     assert captured.out == "DivideCommand: 10 / 2 = 5.0\n"
     assert result == 5.0
 
+
 def test_divide_by_zero():
+    """Test that dividing by zero raises a ValueError."""
     handler = CommandHandler()
     divide_command = DivideCommand(10, 0)
 
@@ -82,9 +83,11 @@ def test_divide_by_zero():
 
     # Check that dividing by zero raises the appropriate ValueError
     with pytest.raises(ValueError, match="Cannot divide by zero"):
-        handler.execute_command("divide_zero")  # This should now raise ValueError
+        handler.execute_command("divide_zero")
+
 
 def test_register_and_execute_add_command(capsys):
+    """Test registration and execution of the AddCommand."""
     handler = CommandHandler()
     add_command = AddCommand(2, 3)
 
@@ -101,7 +104,9 @@ def test_register_and_execute_add_command(capsys):
     assert captured.out == "AddCommand: 2 + 3 = 5\n"
     assert result == 5
 
+
 def test_register_and_execute_subtract_command(capsys):
+    """Test registration and execution of the SubtractCommand."""
     handler = CommandHandler()
     subtract_command = SubtractCommand(5, 2)
 
@@ -118,7 +123,9 @@ def test_register_and_execute_subtract_command(capsys):
     assert captured.out == "SubtractCommand: 5 - 2 = 3\n"
     assert result == 3
 
+
 def test_execute_nonexistent_command():
+    """Test executing a command that doesn't exist raises an error."""
     handler = CommandHandler()
 
     # Try executing a command that doesn't exist
