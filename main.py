@@ -1,5 +1,6 @@
 import os
 import logging
+import pandas as pd
 from abc import ABC, abstractmethod
 
 # Create the logs directory if it doesn't exist
@@ -11,9 +12,41 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('logs/app.log'),  # Log to file
-        logging.StreamHandler()               # Also log to console
+        logging.StreamHandler()                # Also log to console
     ]
 )
+
+# Define the CalculationHistory class
+class CalculationHistory:
+    def __init__(self, filename='calculation_history.csv'):
+        self.filename = filename
+        self.history = pd.DataFrame(columns=['operation', 'operands', 'result'])
+
+        # Load existing history if the file exists
+        if os.path.exists(self.filename):
+            self.history = pd.read_csv(self.filename)
+
+    def add_entry(self, operation, operands, result):
+        new_entry = pd.DataFrame({'operation': [operation], 'operands': [operands], 'result': [result]})
+        # Use pd.concat instead of append
+        self.history = pd.concat([self.history, new_entry], ignore_index=True)
+
+    def save_history(self):
+        self.history.to_csv(self.filename, index=False)
+
+    def clear_history(self):
+        self.history = pd.DataFrame(columns=['operation', 'operands', 'result'])
+        self.save_history()  # Save the cleared history to the file
+
+    def delete_entry(self, index):
+        if 0 <= index < len(self.history):
+            self.history = self.history.drop(index).reset_index(drop=True)
+            self.save_history()  # Save after deletion
+        else:
+            raise IndexError("Invalid index. Cannot delete entry.")
+
+    def show_history(self):
+        return self.history
 
 # Define the Command interface
 class Command(ABC):
@@ -28,7 +61,7 @@ class AddCommand(Command):
         self.b = b
 
     def execute(self):
-        return f"The result of {self.a} add {self.b} is equal to {self.a + self.b}"
+        return self.a + self.b
 
 class SubtractCommand(Command):
     def __init__(self, a, b):
@@ -36,7 +69,7 @@ class SubtractCommand(Command):
         self.b = b
 
     def execute(self):
-        return f"The result of {self.a} subtract {self.b} is equal to {self.a - self.b}"
+        return self.a - self.b
 
 class MultiplyCommand(Command):
     def __init__(self, a, b):
@@ -44,7 +77,7 @@ class MultiplyCommand(Command):
         self.b = b
 
     def execute(self):
-        return f"The result of {self.a} multiply {self.b} is equal to {self.a * self.b}"
+        return self.a * self.b
 
 class DivideCommand(Command):
     def __init__(self, a, b):
@@ -53,13 +86,13 @@ class DivideCommand(Command):
 
     def execute(self):
         if self.b == 0:
-            return "An error occurred: Cannot divide by zero"
-        return f"The result of {self.a} divide {self.b} is equal to {self.a // self.b}"
+            raise ValueError("Cannot divide by zero")
+        return self.a / self.b
 
 # MenuCommand to display the available operations
 class MenuCommand(Command):
     def execute(self):
-        return "Available operations: add, subtract, multiply, divide, menu"
+        return "Available operations: add, subtract, multiply, divide, menu, history, clear, delete"
 
 # CommandHandler to manage the operations
 class CommandHandler:
@@ -73,14 +106,15 @@ class CommandHandler:
         if operation in self.commands:
             return self.commands[operation].execute()
         else:
-            return "Unknown operation."
+            raise ValueError("Unknown operation.")
 
 # Main function to handle user input
 def main():
     handler = CommandHandler()
+    history = CalculationHistory()  # Create an instance of CalculationHistory
 
     while True:
-        operation = input("Enter operation (add, subtract, multiply, divide, menu) or 'quit' to exit: ")
+        operation = input("Enter operation (add, subtract, multiply, divide, menu, history, clear, delete) or 'quit' to exit: ")
 
         if operation == 'quit':
             logging.info("Exiting the app. Goodbye!")
@@ -92,6 +126,29 @@ def main():
             logging.info("Displayed menu options.")
             continue  # Skip to the next iteration for menu
 
+        if operation == 'history':
+            print(history.show_history())
+            logging.info("Displayed calculation history.")
+            continue
+
+        if operation == 'clear':
+            history.clear_history()
+            print("History cleared.")
+            logging.info("Cleared calculation history.")
+            continue
+
+        if operation == 'delete':
+            index = input("Enter the index of the entry to delete: ")
+            try:
+                index = int(index)
+                history.delete_entry(index)
+                print(f"Entry at index {index} deleted.")
+                logging.info(f"Deleted entry at index {index}.")
+            except (ValueError, IndexError) as e:
+                print(f"Error deleting entry: {e}")
+                logging.error(f"Error deleting entry: {e}")
+            continue
+
         a = input("Enter first number: ")
         b = input("Enter second number: ")
 
@@ -102,26 +159,30 @@ def main():
 
             # Register the commands based on the input operation
             if operation == 'add':
-                handler.register_command('add', AddCommand(a, b))
+                command = AddCommand(a, b)
             elif operation == 'subtract':
-                handler.register_command('subtract', SubtractCommand(a, b))
+                command = SubtractCommand(a, b)
             elif operation == 'multiply':
-                handler.register_command('multiply', MultiplyCommand(a, b))
+                command = MultiplyCommand(a, b)
             elif operation == 'divide':
-                handler.register_command('divide', DivideCommand(a, b))
+                command = DivideCommand(a, b)
             else:
                 logging.error("Unknown operation.")
                 print("Unknown operation.")
                 continue
 
             # Execute the command
-            result = handler.execute_command(operation)
-            print(result)
+            result = command.execute()
+            print(f"The result is: {result}")
             logging.info(f"Executed {operation} command with result: {result}")
 
-        except ValueError:
-            logging.error("Invalid input. Please enter valid numbers.")
-            print("Invalid input. Please enter valid numbers.")
+            # Add to history
+            history.add_entry(operation, (a, b), result)
+            history.save_history()
+
+        except ValueError as e:
+            logging.error(f"Invalid input: {e}")
+            print(f"Invalid input: {e}")
 
 # Ensure the program starts correctly
 if __name__ == "__main__":
