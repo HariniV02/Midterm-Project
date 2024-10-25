@@ -7,21 +7,19 @@ import pandas as pd
 # Create the logs directory if it doesn't exist
 os.makedirs('logs', exist_ok=True)
 
-
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,  # Set the logging level here directly
+    level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('logs/app.log'),  # Log to file
-        logging.StreamHandler()                # Also log to console
+        logging.FileHandler('logs/app.log'),
+        logging.StreamHandler()
     ]
 )
 
 
 class CalculationHistory:
-    """Singleton class to manage calculation history."""
-
+    """Singleton class to manage calculation history."""    
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -72,7 +70,8 @@ class CalculationHistory:
 
 
 class Command(ABC):
-    """Abstract base class for commands."""    
+    """Abstract base class for commands."""
+
     @abstractmethod
     def execute(self):
         """Execute the command."""
@@ -138,7 +137,10 @@ class MenuCommand(Command):
 
     def execute(self):
         """Return a list of available operations."""
-        return "Available operations: add, subtract, multiply, divide, menu, history, clear, delete"
+        return (
+            "Available operations: add, subtract, multiply, divide, "
+            "menu, history, clear, delete"
+        )
 
 
 class CommandHandler:
@@ -156,8 +158,7 @@ class CommandHandler:
         """Execute a command if it exists."""
         if operation in self.commands:
             return self.commands[operation].execute()
-        else:
-            raise ValueError("Unknown operation.")
+        raise ValueError("Unknown operation.")
 
 
 # Implementation of the Facade Pattern
@@ -186,7 +187,6 @@ class CalculationFacade:
             return MultiplyCommand(a, b)
         if operation == 'divide':
             return DivideCommand(a, b)
-    
         raise ValueError("Unknown operation.")
 
     def show_history(self):
@@ -235,9 +235,9 @@ def main():
                 facade.delete_entry(index)
                 print(f"Entry at index {index} deleted.")
                 logging.info(f"Deleted entry at index {index}.")
-            except (ValueError, IndexError) as e:
-                print(f"Error deleting entry: {e}")
-                logging.error(f"Error deleting entry: {e}")
+            except (ValueError, IndexError) as error:
+                print(f"Error deleting entry: {error}")
+                logging.error("Error deleting entry: %s", error)
             continue
 
         a = input("Enter first number: ")
@@ -250,10 +250,10 @@ def main():
             # Perform the operation via the facade
             result = facade.perform_operation(operation, a, b)
             print(f"The result is: {result}")
-            logging.info("Executed %s command with result: %s", operation, result)  # Updated logging statement
+            logging.info("Executed %s command with result: %s", operation, result)
 
         except ValueError as error:
-            logging.error("Invalid input: %s", error)  # Updated logging statement
+            logging.error("Invalid input: %s", error)
             print(f"Invalid input: {error}")
 
 
