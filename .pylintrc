@@ -9,10 +9,10 @@ load-plugins=pylint_django
 # Disable the following checks (example list):
 disable= unused-argument,
          line-too-long,
-         redefined-outer-name
-         trailing-whitespace
-         blank-line-at-end-of-file
-         E502
+         redefined-outer-name,
+         trailing-whitespace,
+         blank-line-at-end-of-file,
+         E502,
          E302
 
 [REPORTS]
