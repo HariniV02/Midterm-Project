@@ -5,7 +5,6 @@ import sys
 import logging
 import logging.config
 from abc import ABC, abstractmethod
-from dotenv import load_dotenv
 
 class Command(ABC):
     @abstractmethod
@@ -20,18 +19,18 @@ class CommandHandler:
         self.commands[operation] = command
 
     def execute_command(self, operation):
-        # Check if the command exists before trying to execute it
         command = self.commands.get(operation)
         if command is not None:
             return command.execute()
         else:
-            return f"Unknown command: {operation}"  # Return a friendly message
+            error_message = f"No such command: {operation}"  # Update the message
+            logging.error(error_message)
+            return error_message  # Return the updated friendly message
 
 class App:
     def __init__(self):
         os.makedirs('logs', exist_ok=True)
         self.configure_logging()
-        load_dotenv()
         self.settings = self.load_environment_variables()
         self.settings.setdefault('ENVIRONMENT', 'PRODUCTION')
         self.command_handler = CommandHandler()
@@ -48,9 +47,6 @@ class App:
         settings = {key: value for key, value in os.environ.items()}
         logging.info("Environment variables loaded.")
         return settings
-
-    def get_environment_variable(self, env_var: str = 'ENVIRONMENT'):
-        return self.settings.get(env_var, None)
 
     def load_plugins(self):
         plugins_package = 'app.plugins'
@@ -70,7 +66,6 @@ class App:
         for item_name in dir(plugin_module):
             item = getattr(plugin_module, item_name)
             if isinstance(item, type) and issubclass(item, Command) and item is not Command:
-                # Command names are now explicitly set to the plugin's folder name
                 self.command_handler.register_command(plugin_name, item())
                 logging.info(f"Command '{plugin_name}' from plugin '{plugin_name}' registered.")
 
@@ -82,20 +77,15 @@ class App:
                 cmd_input = input(">>> ").strip()
                 if cmd_input.lower() == 'exit':
                     logging.info("Application exit.")
-                    sys.exit(0)  # Use sys.exit(0) for a clean exit, indicating success.
-                try:
-                    self.command_handler.execute_command(cmd_input)
-                except KeyError:  # Assuming execute_command raises KeyError for unknown commands
-                    logging.error(f"Unknown command: {cmd_input}")
-                    sys.exit(1)  # Use a non-zero exit code to indicate failure or incorrect command.
+                    sys.exit(0)
+                result = self.command_handler.execute_command(cmd_input)
+                print(result)  # Print the result of the command execution
         except KeyboardInterrupt:
             logging.info("Application interrupted and exiting gracefully.")
-            sys.exit(0)  # Assuming a KeyboardInterrupt should also result in a clean exit.
+            ys.exit(0)
         finally:
             logging.info("Application shutdown.")
 
 if __name__ == "__main__":
     app = App()
     app.start()
-
-            

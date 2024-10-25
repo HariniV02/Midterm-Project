@@ -124,5 +124,6 @@ def test_execute_nonexistent_command():
     # Try executing a command that doesn't exist
     result = handler.execute_command("nonexistent")
 
-    # Assert that the result is None (no command executed)
-    assert result is None
+    # Assert that the result matches the expected error message
+    expected_message = "No such command: nonexistent"
+    assert result == expected_message
