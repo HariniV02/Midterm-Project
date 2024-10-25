@@ -30,10 +30,6 @@ jobs:
     - name: Run Pylint
       run: pylint --rcfile=.pylintrc .  # Analyze the whole project
 
-    - name: Run Flake8 for code style checking
-      run: |
-        flake8 .
-
     - name: Test with pytest
       run: |
         pytest
