@@ -1,4 +1,3 @@
-"""Unit tests for the App and CommandHandler classes in the application."""
 import pytest
 from app import App
 from app.commands import CommandHandler

@@ -1,5 +1,3 @@
-""" Unit tests for the Calculation class and basic arithmetic operations. """
-
 from decimal import Decimal
 import pytest
 from calculator.calculation import Calculation

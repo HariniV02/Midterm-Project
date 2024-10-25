@@ -1,8 +1,3 @@
-
-"""
-Unit tests for the Calculations class.
-"""
-
 from decimal import Decimal
 
 from calculator.calculation import Calculation
