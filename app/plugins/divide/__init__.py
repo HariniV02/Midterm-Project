@@ -1,6 +1,7 @@
 from app.commands import Command
 
 class DivideCommand(Command):
+    """Class to represent a division command."""
     def __init__(self, a, b):
         self.a = a
         self.b = b

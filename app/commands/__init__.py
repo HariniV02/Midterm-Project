@@ -7,11 +7,13 @@ import logging.config
 from abc import ABC, abstractmethod
 
 class Command(ABC):
+    """Abstract base class for all command types."""
     @abstractmethod
     def execute(self):
         pass
 
 class CommandHandler:
+    """Handles the registration and execution of commands."""
     def __init__(self):
         self.commands = {}
 
@@ -22,12 +24,12 @@ class CommandHandler:
         command = self.commands.get(operation)
         if command is not None:
             return command.execute()
-        else:
-            error_message = f"No such command: {operation}"  # Update the message
-            logging.error(error_message)
-            return error_message  # Return the updated friendly message
+        error_message = f"No such command: {operation}"  # Update the message
+        logging.error(error_message)
+        return error_message  # Return the updated friendly message
 
 class App:
+    """Main application class to manage command execution and logging."""
     def __init__(self):
         os.makedirs('logs', exist_ok=True)
         self.configure_logging()
