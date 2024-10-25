@@ -7,7 +7,7 @@ class DivideCommand(Command):
 
     def execute(self):
         if self.b == 0:
-            raise ZeroDivisionError("Division by zero is not allowed.")
+            raise ValueError("Cannot divide by zero")  # Raise ValueError for division by zero
         result = self.a / self.b
         print(f"DivideCommand: {self.a} / {self.b} = {result}")
         return result

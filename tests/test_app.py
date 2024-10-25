@@ -80,9 +80,9 @@ def test_divide_by_zero():
     # Register the divide command
     handler.register_command("divide_zero", divide_command)
 
-    # Check that dividing by zero raises the appropriate error
-    with pytest.raises(ZeroDivisionError, match="Division by zero is not allowed."):
-        handler.execute_command("divide_zero")
+    # Check that dividing by zero raises the appropriate ValueError
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        handler.execute_command("divide_zero")  # This should now raise ValueError
 
 def test_register_and_execute_add_command(capsys):
     handler = CommandHandler()

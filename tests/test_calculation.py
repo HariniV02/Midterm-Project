@@ -1,4 +1,3 @@
-
 """ Unit tests for the Calculation class and basic arithmetic operations. """
 
 from decimal import Decimal
@@ -6,7 +5,7 @@ import pytest
 from calculator.calculation import Calculation
 from calculator.operations import add, subtract, multiply, divide
 
-@pytest.mark.parametrize("a, b, operation, expected", [
+@pytest.mark.parametrize("a_value, b_value, operation, expected_output", [
     (Decimal('15'), Decimal('7'), add, Decimal('22')),
     (Decimal('15'), Decimal('7'), subtract, Decimal('8')),
     (Decimal('15'), Decimal('7'), multiply, Decimal('105')),
@@ -16,13 +15,13 @@ from calculator.operations import add, subtract, multiply, divide
     (Decimal('20.5'), Decimal('3'), multiply, Decimal('61.5')),
     (Decimal('20'), Decimal('0.4'), divide, Decimal('50')),
 ])
-def test_calculation_operations(a, b, operation, expected):
+def test_calculation_operations(a_value, b_value, operation, expected_output):
     """ Test various arithmetic operations using the Calculation class. """
-    calc = Calculation(a, b, operation)
+    calc = Calculation(a_value, b_value, operation)
     result = calc.perform()
-    assert result == expected, (
-        f"Failed {operation.__name__} operation with {a} and {b}: "
-        f"expected {expected}, got {result}"
+    assert result == expected_output, (
+        f"Failed {operation.__name__} operation with {a_value} and {b_value}: "
+        f"expected {expected_output}, got {result}"
     )
 
 def test_calculation_repr():
@@ -36,3 +35,4 @@ def test_divide_by_zero():
     calc = Calculation(Decimal('10'), Decimal('0'), divide)
     with pytest.raises(ValueError, match="Cannot divide by zero"):
         calc.perform()
+

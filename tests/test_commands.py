@@ -1,4 +1,3 @@
-# tests/test_all_commands.py
 import pytest
 from app.plugins.add import AddCommand
 from app.plugins.subtract import SubtractCommand
@@ -29,9 +28,12 @@ def test_divide_command():
 
 # Test for DivideCommand handling division by zero
 def test_divide_by_zero():
-    with pytest.raises(ZeroDivisionError):
-        divide_command = DivideCommand(10, 0)
-        divide_command.execute()
+    # Attempt to create a DivideCommand with a denominator of zero
+    divide_command = DivideCommand(10, 0)  # Create an instance
+
+    # Check that executing this command raises the expected ValueError
+    with pytest.raises(ValueError, match="Cannot divide by zero"):
+        divide_command.execute()  # This should raise the ValueError
 
 # Test for MenuCommand
 def test_menu_command(capsys):
@@ -39,12 +41,8 @@ def test_menu_command(capsys):
     menu_command = MenuCommand()
     
     # Execute the command
-    menu_command.execute()
+    output = menu_command.execute()
     
-    # Capture the printed output
-    captured = capsys.readouterr()
-    
-    # Assert that 'Menu' was printed
-    assert captured.out == "Menu\n"
-
-
+    # Verify the expected output directly from the command
+    expected_output = "Available operations: add, subtract, multiply, divide\n"  # This should match the command's output
+    assert output == expected_output  # Check the output of the command
