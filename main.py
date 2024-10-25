@@ -8,7 +8,7 @@ os.makedirs('logs', exist_ok=True)
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO,  # Set the logging level here directly
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('logs/app.log'),  # Log to file
@@ -16,45 +16,49 @@ logging.basicConfig(
     ]
 )
 
-# Define the CalculationHistory class
 class CalculationHistory:
-    def __init__(self, filename='calculation_history.csv'):
-        self.filename = filename
-        self.history = pd.DataFrame(columns=['operation', 'operands', 'result'])
+    _instance = None
 
-        # Load existing history if the file exists
-        if os.path.exists(self.filename):
-            self.history = pd.read_csv(self.filename)
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(CalculationHistory, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self, filename='calculation_history.csv'):
+        if not hasattr(self, 'initialized'):
+            self.filename = filename
+            self.history = pd.DataFrame(columns=['operation', 'operands', 'result'])
+            if os.path.exists(self.filename):
+                self.history = pd.read_csv(self.filename)
+            self.initialized = True
 
     def add_entry(self, operation, operands, result):
         new_entry = pd.DataFrame({'operation': [operation], 'operands': [operands], 'result': [result]})
-        # Use pd.concat instead of append
         self.history = pd.concat([self.history, new_entry], ignore_index=True)
+        self.save_history()
 
     def save_history(self):
         self.history.to_csv(self.filename, index=False)
 
     def clear_history(self):
         self.history = pd.DataFrame(columns=['operation', 'operands', 'result'])
-        self.save_history()  # Save the cleared history to the file
+        self.save_history()
 
     def delete_entry(self, index):
         if 0 <= index < len(self.history):
             self.history = self.history.drop(index).reset_index(drop=True)
-            self.save_history()  # Save after deletion
+            self.save_history()
         else:
             raise IndexError("Invalid index. Cannot delete entry.")
 
     def show_history(self):
         return self.history
 
-# Define the Command interface
 class Command(ABC):
     @abstractmethod
     def execute(self):
         pass
 
-# Define individual command classes for each operation
 class AddCommand(Command):
     def __init__(self, a, b):
         self.a = a
@@ -89,12 +93,10 @@ class DivideCommand(Command):
             raise ValueError("Cannot divide by zero")
         return self.a / self.b
 
-# MenuCommand to display the available operations
 class MenuCommand(Command):
     def execute(self):
         return "Available operations: add, subtract, multiply, divide, menu, history, clear, delete"
 
-# CommandHandler to manage the operations
 class CommandHandler:
     def __init__(self):
         self.commands = {}
@@ -108,11 +110,41 @@ class CommandHandler:
         else:
             raise ValueError("Unknown operation.")
 
-# Main function to handle user input
-def main():
-    handler = CommandHandler()
-    history = CalculationHistory()  # Create an instance of CalculationHistory
+# Implementation of the Facade Pattern
+class CalculationFacade:
+    def __init__(self):
+        self.history = CalculationHistory()
+        self.handler = CommandHandler()
 
+    def perform_operation(self, operation, a, b):
+        command = self.create_command(operation, a, b)
+        result = command.execute()
+        self.history.add_entry(operation, (a, b), result)
+        return result
+
+    def create_command(self, operation, a, b):
+        if operation == 'add':
+            return AddCommand(a, b)
+        elif operation == 'subtract':
+            return SubtractCommand(a, b)
+        elif operation == 'multiply':
+            return MultiplyCommand(a, b)
+        elif operation == 'divide':
+            return DivideCommand(a, b)
+        else:
+            raise ValueError("Unknown operation.")
+
+    def show_history(self):
+        return self.history.show_history()
+
+    def clear_history(self):
+        self.history.clear_history()
+
+    def delete_entry(self, index):
+        self.history.delete_entry(index)
+
+def main():
+    facade = CalculationFacade()  # Use the Facade
     while True:
         operation = input("Enter operation (add, subtract, multiply, divide, menu, history, clear, delete) or 'quit' to exit: ")
 
@@ -121,18 +153,17 @@ def main():
             break
 
         if operation == 'menu':
-            handler.register_command('menu', MenuCommand())
-            print(handler.execute_command('menu'))
+            print("Available operations: add, subtract, multiply, divide, menu, history, clear, delete")
             logging.info("Displayed menu options.")
-            continue  # Skip to the next iteration for menu
+            continue
 
         if operation == 'history':
-            print(history.show_history())
+            print(facade.show_history())
             logging.info("Displayed calculation history.")
             continue
 
         if operation == 'clear':
-            history.clear_history()
+            facade.clear_history()
             print("History cleared.")
             logging.info("Cleared calculation history.")
             continue
@@ -141,7 +172,7 @@ def main():
             index = input("Enter the index of the entry to delete: ")
             try:
                 index = int(index)
-                history.delete_entry(index)
+                facade.delete_entry(index)
                 print(f"Entry at index {index} deleted.")
                 logging.info(f"Deleted entry at index {index}.")
             except (ValueError, IndexError) as e:
@@ -152,33 +183,14 @@ def main():
         a = input("Enter first number: ")
         b = input("Enter second number: ")
 
-        # Try converting inputs to integers
         try:
             a = int(a)
             b = int(b)
 
-            # Register the commands based on the input operation
-            if operation == 'add':
-                command = AddCommand(a, b)
-            elif operation == 'subtract':
-                command = SubtractCommand(a, b)
-            elif operation == 'multiply':
-                command = MultiplyCommand(a, b)
-            elif operation == 'divide':
-                command = DivideCommand(a, b)
-            else:
-                logging.error("Unknown operation.")
-                print("Unknown operation.")
-                continue
-
-            # Execute the command
-            result = command.execute()
+            # Perform the operation via the facade
+            result = facade.perform_operation(operation, a, b)
             print(f"The result is: {result}")
             logging.info(f"Executed {operation} command with result: {result}")
-
-            # Add to history
-            history.add_entry(operation, (a, b), result)
-            history.save_history()
 
         except ValueError as e:
             logging.error(f"Invalid input: {e}")
