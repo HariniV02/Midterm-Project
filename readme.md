@@ -1,5 +1,141 @@
 # Project Documentation for the Calculator
+# Calculator Project
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+  - [Design Patterns](#design-patterns)
+  - [Logging Strategy](#logging-strategy)
+- [Setup Instructions](#setup-instructions)
+- [Usage Examples](#usage-examples)
+- [License](#license)
+
+## Overview
+
+This calculator project is an advanced Python application designed to perform various mathematical operations. It features dynamic plugin integration, allowing for extensibility and flexibility in adding new operations without modifying the core code.
+
+## Features
+
+- Basic arithmetic operations (addition, subtraction, multiplication, division)
+- Advanced functions (e.g., power, square root)
+- Dynamic plugin system for adding new operations
+- Comprehensive logging for debugging and tracking operations
+
+## Architecture
+
+### Design Patterns
+
+The project implements several design patterns to enhance maintainability and scalability:
+
+1. **Strategy Pattern**: 
+   - This pattern is used for defining a family of algorithms (operations in this case), encapsulating each one, and making them interchangeable. The calculator can easily switch between different operations without changing its core functionality.
+   - **Impact**: This allows for the addition of new operations (plugins) without modifying existing code, thus adhering to the Open/Closed Principle.
+
+2. **Singleton Pattern**: 
+   - Used for the logger class, ensuring that only one instance of the logger is created and used throughout the application.
+   - **Impact**: This reduces memory usage and centralizes logging functionality, making it easier to manage and maintain logs.
+
+### Logging Strategy
+
+The logging strategy employs Python's built-in logging module to provide insights into the application’s operation. 
+
+- **Implementation**:
+  - The logger is configured to log messages at various levels (DEBUG, INFO, WARNING, ERROR, CRITICAL).
+  - Logs are written to a file for persistence, allowing for historical tracking of calculations and potential issues.
+
+- **Impact**:
+  - This provides a clear audit trail for debugging and analysis, improving the maintainability of the code and the user experience.
+
+## Setup Instructions
+
+To set up the project locally, follow these steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/HariniV02/Midterm-Project.git
+   cd Midterm-Project
+   ```
+
+2. **Create a virtual environment**:
+   ```bash
+   python -m venv venv
+   ```
+
+3. **Activate the virtual environment**:
+   - On Windows:
+     ```bash
+     venv\Scripts\activate
+     ```
+   - On macOS/Linux:
+     ```bash
+     source venv/bin/activate
+     ```
+
+4. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage Examples
+
+To use the calculator, run the main application file:
+
+```bash
+python main.py
+```
+
+### Example Operations
+
+1. **Addition**:
+   ```python
+   result = calculator.add(5, 3)  # Output: 8
+   ```
+
+2. **Dynamic Plugin**:
+   To add a custom operation, create a plugin and load it as follows:
+
+   ```python
+   # my_power_plugin.py
+   class PowerOperation:
+       def calculate(self, base, exponent):
+           return base ** exponent
+   ```
+
+   Load the plugin in the main application:
+   ```python
+   calculator.load_plugin(PowerOperation())
+   ```
+
+
+## Usage
+Once the application is running, you can use the calculator as follows:
+
+### Basic Operations:
+- The calculator supports basic operations: addition, subtraction, multiplication, and division.
+- You can input numbers and choose the desired operation by following the prompts in the terminal.
+
+### Using the Command-Line Interface:
+- After launching the application, you will see a menu of available operations. Follow the on-screen instructions to enter your numbers and select the operation you want to perform.
+
+### Adding New Operations via Plugins:
+- If you've developed and included new plugins, you can load them dynamically when the application starts.
+- For instance, if you have a plugin for calculating the power of a number, you would input the numbers and select the power operation from the menu.
+
+### Example Usage:
+Here’s a brief walkthrough of how to perform a calculation:
+1. Start the application by running `python main.py`.
+2. Enter `1` for addition.
+3. Input `5` and `3` when prompted.
+4. The calculator will return the result: `8`.
+
+### Error Handling:
+- If you enter invalid input (e.g., letters instead of numbers), the calculator will prompt you to enter valid numbers, demonstrating its robust error handling.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Design Patterns Implementation
 In this project, I utilized the **Factory Design Pattern** to manage the creation of different operation classes (add, subtract, multiply, divide). This allows for easy scalability if more operations need to be added in the future.
