@@ -3,7 +3,6 @@ import logging
 from abc import ABC, abstractmethod
 import pandas as pd
 
-
 # Create the logs directory if it doesn't exist
 os.makedirs('logs', exist_ok=True)
 
@@ -16,7 +15,6 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-
 
 class CalculationHistory:
     """Singleton class to manage calculation history."""    
@@ -132,13 +130,26 @@ class DivideCommand(Command):
         return self.a / self.b
 
 
+class PowerCommand(Command):
+    """Command to calculate the power of two numbers."""
+
+    def __init__(self, base, exponent):
+        """Initialize with base and exponent."""
+        self.base = base
+        self.exponent = exponent
+
+    def execute(self):
+        """Perform power operation."""
+        return self.base ** self.exponent
+
+
 class MenuCommand(Command):
     """Command to display available operations."""
 
     def execute(self):
         """Return a list of available operations."""
         return (
-            "Available operations: add, subtract, multiply, divide, "
+            "Available operations: add, subtract, multiply, divide, power, "
             "menu, history, clear, delete"
         )
 
@@ -187,6 +198,8 @@ class CalculationFacade:
             return MultiplyCommand(a, b)
         if operation == 'divide':
             return DivideCommand(a, b)
+        if operation == 'power':  # New command for power operation
+            return PowerCommand(a, b)
         raise ValueError("Unknown operation.")
 
     def show_history(self):
@@ -206,14 +219,14 @@ def main():
     """Main function to run the calculator application."""
     facade = CalculationFacade()  # Use the Facade
     while True:
-        operation = input("Enter operation (add, subtract, multiply, divide, menu, history, clear, delete) or 'quit' to exit: ")
+        operation = input("Enter operation (add, subtract, multiply, divide, power, menu, history, clear, delete) or 'quit' to exit: ")
 
         if operation == 'quit':
             logging.info("Exiting the app. Goodbye!")
             break
 
         if operation == 'menu':
-            print("Available operations: add, subtract, multiply, divide, menu, history, clear, delete")
+            print("Available operations: add, subtract, multiply, divide, power, menu, history, clear, delete")
             logging.info("Displayed menu options.")
             continue
 
