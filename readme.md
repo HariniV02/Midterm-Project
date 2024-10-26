@@ -9,7 +9,7 @@
   - [Design Patterns](#design-patterns)
   - [Logging Strategy](#logging-strategy)
 - [Setup Instructions](#setup-instructions)
-- [Usage Examples](#usage)
+- [Usage](#usage)
 - [License](#license)
 
 ## Overview
