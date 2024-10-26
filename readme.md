@@ -78,36 +78,6 @@ To set up the project locally, follow these steps:
    pip install -r requirements.txt
    ```
 
-## Usage Examples
-
-To use the calculator, run the main application file:
-
-```bash
-python main.py
-```
-
-### Example Operations
-
-1. **Addition**:
-   ```python
-   result = calculator.add(5, 3)  # Output: 8
-   ```
-
-2. **Dynamic Plugin**:
-   To add a custom operation, create a plugin and load it as follows:
-
-   ```python
-   # my_power_plugin.py
-   class PowerOperation:
-       def calculate(self, base, exponent):
-           return base ** exponent
-   ```
-
-   Load the plugin in the main application:
-   ```python
-   calculator.load_plugin(PowerOperation())
-   ```
-
 
 ## Usage
 Once the application is running, you can use the calculator as follows:
@@ -133,9 +103,6 @@ Here’s a brief walkthrough of how to perform a calculation:
 ### Error Handling:
 - If you enter invalid input (e.g., letters instead of numbers), the calculator will prompt you to enter valid numbers, demonstrating its robust error handling.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Design Patterns Implementation
 In this project, I utilized the **Factory Design Pattern** to manage the creation of different operation classes (add, subtract, multiply, divide). This allows for easy scalability if more operations need to be added in the future.
@@ -168,4 +135,8 @@ I implemented exception handling using both the "Look Before You Leap" (LBYL) an
 A video demonstration of the calculator has been created to showcase its key features and functionalities. 
 
 **Video Link**: [Calculator Demonstration Video](https://youtu.be/Yj-IkdG_cXs)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
