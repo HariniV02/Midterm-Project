@@ -1,5 +1,4 @@
 # Project Documentation for the Calculator
-# Calculator Project
 
 ## Table of Contents
 
@@ -19,7 +18,6 @@ This calculator project is an advanced Python application designed to perform va
 ## Features
 
 - Basic arithmetic operations (addition, subtraction, multiplication, division)
-- Advanced functions (e.g., power, square root)
 - Dynamic plugin system for adding new operations
 - Comprehensive logging for debugging and tracking operations
 
@@ -80,18 +78,18 @@ To set up the project locally, follow these steps:
 
 
 ## Usage
-Once the application is running, you can use the calculator as follows:
+Once the application is running, use the calculator as follows:
 
 ### Basic Operations:
 - The calculator supports basic operations: addition, subtraction, multiplication, and division.
-- You can input numbers and choose the desired operation by following the prompts in the terminal.
+- Input numbers and choose the desired operation by following the prompts in the terminal.
 
 ### Using the Command-Line Interface:
-- After launching the application, you will see a menu of available operations. Follow the on-screen instructions to enter your numbers and select the operation you want to perform.
+- After launching the application, a menu of available operations will pop up. Follow the on-screen instructions to enter the numbers and select the desired operation.
 
 ### Adding New Operations via Plugins:
-- If you've developed and included new plugins, you can load them dynamically when the application starts.
-- For instance, if you have a plugin for calculating the power of a number, you would input the numbers and select the power operation from the menu.
+- If new plugins were developed and included, load them dynamically when the application starts now.
+- For instance, if you have a plugin for calculating the power of a number, input the numbers and select the power operation from the menu.
 
 ### Example Usage:
 Here’s a brief walkthrough of how to perform a calculation:
@@ -101,7 +99,7 @@ Here’s a brief walkthrough of how to perform a calculation:
 4. The calculator will return the result: `8`.
 
 ### Error Handling:
-- If you enter invalid input (e.g., letters instead of numbers), the calculator will prompt you to enter valid numbers, demonstrating its robust error handling.
+- If an invalid input is entered (e.g., letters instead of numbers), the calculator will prompt you to enter valid numbers, demonstrating its robust error handling.
 
 
 ## Design Patterns Implementation
